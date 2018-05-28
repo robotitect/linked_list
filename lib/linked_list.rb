@@ -12,7 +12,7 @@ class LinkedList
     current_node = @head
     while(current_node)
       yield(current_node)
-      current_node = @head.next_node
+      current_node = current_node.next_node
     end
   end
 
@@ -20,22 +20,23 @@ class LinkedList
   def each_node_with_index
     i = 0
     each_node do |node|
-      i += 1
       yield(node, i)
+      i += 1
     end
   end
 
   # Iterates over the data content of each node in LinkedList
   def each_node_data
-    each_node { |node| yield(node.data) }
+    each_node { |node| yield(node.value) }
   end
 
   # Iterates over the data content of each node in LinkedList, tracks index
   def each_node_data_with_index
-    each_node_with_index { |node, index| yield(node.data, index) }
+    each_node_with_index { |node, index| yield(node.value, index) }
   end
 
-  # @return +node+ The final node in the LinkedList
+  # Provides the final node in the LinkedList
+  # @return +node+ [Node] The final node in the LinkedList
   def tail
     each_node { |node| return node if node.next_node.nil? }
   end
@@ -44,7 +45,8 @@ class LinkedList
   # and adds it to the end of the LinkedList.
   # @param +data+ The data to add.
   def append(data)
-    tail.next_node = Node.new(data)
+    tail.next_node = data
+    return self
   end
 
   # Creates a node with the passed in value as data
@@ -86,6 +88,7 @@ class LinkedList
     else
       each_node_data { |node_data| return true if node_data == value }
     end
+    false
   end
 
   def find(data)
@@ -94,6 +97,7 @@ class LinkedList
     else
       each_node_data_with_index { |node_data, i| return i if data == node_data }
     end
+    -1
   end
 
   def to_s
@@ -112,6 +116,7 @@ class LinkedList
     else
       at(index - 1).next_node = Node.new(data, at(index))
     end
+    return self
   end
 
   def remove_at(index)
@@ -127,9 +132,9 @@ class LinkedList
     end
 
     def next_node=(next_candidate)
-      if(next_candidate.nil? || !next_candidate.is_a?(Node))
+      if(next_candidate.nil? || next_candidate.is_a?(Node))
         @next_node = next_candidate
-      else # IF next is not a Node already THEN wrap in a Node
+      else # IF next_candidate is not a Node already THEN wrap in a Node
         @next_node = Node.new(next_candidate)
       end
     end
